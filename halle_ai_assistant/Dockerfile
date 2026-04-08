@@ -1,7 +1,7 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12
 FROM $BUILD_FROM
 
-# Installeer systeem-afhankelijkheden en zorg dat pip aanwezig is
+# Systeem-afhankelijkheden
 RUN apk add --no-cache \
   python3 \
   py3-pip \
@@ -10,14 +10,12 @@ RUN apk add --no-cache \
   libffi \
   openssl
 
-# We installeren met 'python3 -m pip' om de 'not found' error te voorkomen
+# We laten de versie-nummers los zodat pip de beste match vindt, 
+# maar we blijven de voorgebouwde 'wheels' van HA gebruiken.
 RUN python3 -m pip install --no-cache-dir --break-system-packages \
   --prefer-binary \
   --find-links https://wheels.home-assistant.io/musllinux/ \
-  av==12.1.0 \
-  faster-whisper
-
-RUN python3 -m pip install --no-cache-dir --break-system-packages \
+  faster-whisper \
   fastapi \
   uvicorn \
   requests \
