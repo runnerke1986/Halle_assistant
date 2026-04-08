@@ -1,0 +1,30 @@
+name: "Halle AI Assistent"
+description: "Een snelle lokale LLM (Ollama) & Spraak assistent (Faster-Whisper), speciaal gebouwd voor jouw HA setup."
+version: "1.0.0"
+slug: "halle_ai_assistant"
+init: false
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+
+# Hier specifieer je welke mappen hij mag lezen in Home Assistant (b.v. media om audio op te slaan)
+map:
+  - media:rw
+
+# Opties die de gebruiker in de UI van Home Assistant kan aanpassen
+options:
+  llm_model: "llama3"
+  ollama_url: "http://een-lokaal-ip:11434/api/chat"
+  whatsapp_token: ""
+
+# Format van de opties (Handig voor in het frontend van HA)
+schema:
+  llm_model: str
+  ollama_url: str
+  whatsapp_token: str?
+
+# Welke poorten er open gezet moeten worden
+ports:
+  8000/tcp: 8000
