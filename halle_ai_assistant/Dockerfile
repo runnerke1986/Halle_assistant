@@ -1,23 +1,23 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12
 FROM $BUILD_FROM
 
-# Alleen de runtime bibliotheken, geen compilers
+# Installeer systeem-afhankelijkheden en zorg dat pip aanwezig is
 RUN apk add --no-cache \
+  python3 \
+  py3-pip \
   ffmpeg \
   ffmpeg-libs \
   libffi \
   openssl
 
-# We installeren eerst AV en Faster-Whisper met een strikte regel:
-# NIET compileren. Als er geen wheel is, moet hij stoppen.
-RUN pip3 install --no-cache-dir --break-system-packages \
+# We installeren met 'python3 -m pip' om de 'not found' error te voorkomen
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
   --prefer-binary \
   --find-links https://wheels.home-assistant.io/musllinux/ \
   av==12.1.0 \
   faster-whisper
 
-# De rest van de benodigdheden
-RUN pip3 install --no-cache-dir --break-system-packages \
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
   fastapi \
   uvicorn \
   requests \
