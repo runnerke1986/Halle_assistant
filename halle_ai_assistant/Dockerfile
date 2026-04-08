@@ -7,11 +7,15 @@ RUN apk add --no-cache \
   python3 \
   py3-pip \
   ffmpeg \
+  ffmpeg-dev \
+  pkgconfig \
   gcc \
-  python3-dev \
-  musl-dev \
   g++ \
   make \
+  libc-dev \
+  linux-headers \
+  python3-dev \
+  musl-dev \
   libffi-dev
 
 # Upgrade pip en installeer de packages
