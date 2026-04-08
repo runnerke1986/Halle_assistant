@@ -1,6 +1,6 @@
 name: "Halle AI Assistent"
 description: "Een snelle lokale LLM (Ollama) & Spraak assistent (Faster-Whisper), speciaal gebouwd voor jouw HA setup."
-version: "1.0.0"
+version: "1.0.1"
 slug: "halle_ai_assistant"
 init: false
 arch:
