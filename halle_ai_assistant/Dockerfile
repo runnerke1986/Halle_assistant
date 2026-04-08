@@ -1,24 +1,31 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
+ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Installeer Python en benodigdheden
-RUN \
-  apk add --no-cache \
-    python3 \
-    py3-pip \
-    ffmpeg \
-    && pip3 install --no-cache-dir --break-system-packages \
-       fastapi \
-       uvicorn \
-       requests \
-       faster-whisper \
-       pydantic
+# Systeemafhankelijkheden installeren
+RUN apk add --no-cache \
+  python3 \
+  py3-pip \
+  ffmpeg \
+  gcc \
+  python3-dev \
+  musl-dev
 
-# Kopieer de code die we hebben gebouwd naar de image
-COPY src/ /app/src/
-COPY run.sh /
+# Python packages installeren
+# We doen dit apart zodat caching beter werkt
+RUN pip3 install --no-cache-dir --break-system-packages \
+  fastapi \
+  uvicorn \
+  requests \
+  faster-whisper \
+  pydantic
 
-# Zorg dat HA het start script kan uitvoeren
-RUN chmod a+x /run.sh
+# Werkmap instellen
+WORKDIR /app
 
-CMD [ "/run.sh" ]
+# Kopieer de inhoud van de lokale map naar de container
+COPY . .
+
+# Zorg dat het startscript uitvoerbaar is
+RUN chmod a+x run.sh
+
+CMD [ "./run.sh" ]
