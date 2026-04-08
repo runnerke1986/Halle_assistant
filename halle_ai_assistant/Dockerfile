@@ -1,17 +1,21 @@
-ARG BUILD_FROM
+# We geven een default waarde voor amd64 (jouw NUC)
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM $BUILD_FROM
 
-# Systeemafhankelijkheden installeren
+# Installeer systeem-afhankelijkheden die nodig zijn voor het compileren van Python packages
 RUN apk add --no-cache \
   python3 \
   py3-pip \
   ffmpeg \
   gcc \
   python3-dev \
-  musl-dev
+  musl-dev \
+  g++ \
+  make \
+  libffi-dev
 
-# Python packages installeren
-# We doen dit apart zodat caching beter werkt
+# Upgrade pip en installeer de packages
+# We doen dit in één RUN commando om de image klein te houden
 RUN pip3 install --no-cache-dir --break-system-packages \
   fastapi \
   uvicorn \
@@ -19,10 +23,10 @@ RUN pip3 install --no-cache-dir --break-system-packages \
   faster-whisper \
   pydantic
 
-# Werkmap instellen
+# Stel de werkmap in
 WORKDIR /app
 
-# Kopieer de inhoud van de lokale map naar de container
+# Kopieer alles (zorg dat je mappenstructuur nu klopt op GitHub!)
 COPY . .
 
 # Zorg dat het startscript uitvoerbaar is
