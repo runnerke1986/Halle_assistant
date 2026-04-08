@@ -1,20 +1,28 @@
-#!/usr/bin/env bashio
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12
+FROM $BUILD_FROM
 
-echo "✨ Halle Assistent Add-on start op..."
+# Systeem-afhankelijkheden
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    ffmpeg \
+    ffmpeg-libs \
+    libffi \
+    openssl
 
-# Bashio laat ons direct met de supervisor van HA praten,
-# we hoeven dus zelf geen access tokens aan te maken, het systeem injecteert ze!
-export HA_URL="http://supervisor/core"
-export HA_TOKEN=$SUPERVISOR_TOKEN
+# We laten de versie-nummers los zodat pip de beste match vindt, 
+# maar we blijven de voorgebouwde 'wheels' van HA gebruiken.
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
+    --prefer-binary \
+    --find-links https://wheels.home-assistant.io/musllinux/ \
+    faster-whisper \
+    fastapi \
+    uvicorn \
+    requests \
+    pydantic
 
-# Haal de configuratie die je in de UI invult op
-export OLLAMA_URL=$(bashio::config 'ollama_url')
-export LLM_MODEL=$(bashio::config 'llm_model')
-export WHATSAPP_TOKEN=$(bashio::config 'whatsapp_token')
+WORKDIR /app
+COPY . .
+RUN chmod a+x run.sh
 
-echo "Geladen configuratie:"
-echo "LLM Model: $LLM_MODEL"
-
-# Navigeer naar de applicatie map en start onze applicatie poort 8000
-cd /app/src
-exec python3 main.py
+CMD [ "./run.sh" ]
